@@ -28,6 +28,39 @@ async function main() {
   });
 
   console.log('Seed completed!');
+
+  await prisma.pokemonCard.deleteMany();
+  await prisma.pokemonCard.createMany({
+    data: [
+      {
+        name: 'Pikachu',
+        pokedexId: 25,
+        typeId: 5,
+        lifePoints: 50,
+        size: 0.4,
+        weight: 6,
+        imageUrl: 'https://assets.pokemon.com/assets/cms2/img/pokedex/full/025.png',
+      },
+      {
+        name: 'Dracofeu',
+        pokedexId: 6,
+        typeId: 2,
+        lifePoints: 150,
+        size: 1.7,
+        weight: 90,
+        imageUrl: 'https://assets.pokemon.com/assets/cms2/img/pokedex/full/006.png',
+      },
+      {
+        name: 'Ectoplasma',
+        pokedexId: 94,
+        typeId: 14,
+        lifePoints: 120,
+        size: 1.5,
+        weight: 40,
+        imageUrl: 'https://assets.pokemon.com/assets/cms2/img/pokedex/full/094.png',
+      }
+    ],
+  });
 }
 
 main()
