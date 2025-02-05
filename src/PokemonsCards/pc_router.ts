@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { getPokemonCards, getPokemonCardById, createPokemonCard, updatePokemonCard, deletePokemonCard } from './pc_controller';
+import { verifyJWT } from '../Common/jwt.middleware';
  
 export const pc_router = Router();
 
@@ -10,10 +11,10 @@ pc_router.get('/', getPokemonCards);
 pc_router.get('/:pokemonCardId', getPokemonCardById);
   
 // Route pour créer un pokemon
-pc_router.post('/', createPokemonCard)
+pc_router.post('/', verifyJWT, createPokemonCard)
   
 // Route pour mettre à jour un pokemon
-pc_router.patch('/:pokemonCardId', updatePokemonCard)
+pc_router.patch('/:pokemonCardId', verifyJWT, updatePokemonCard)
   
 // Route pour supprimer un pokemon
-pc_router.delete('/:pokemonCardId', deletePokemonCard)
+pc_router.delete('/:pokemonCardId', verifyJWT, deletePokemonCard)
