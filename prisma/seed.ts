@@ -27,8 +27,6 @@ async function main() {
     ],
   });
 
-  console.log('Seed completed!');
-
   await prisma.pokemonCard.deleteMany();
   await prisma.pokemonCard.createMany({
     data: [
@@ -61,6 +59,9 @@ async function main() {
       }
     ],
   });
+
+  console.log('Seed completed!');
+
 }
 
 main()
