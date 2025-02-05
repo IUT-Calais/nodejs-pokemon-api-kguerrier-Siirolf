@@ -1,5 +1,5 @@
-import { Router, Request, Response } from 'express';
-import { getPokemonCards, getPokemonCardById } from './pc_controller';
+import { Router } from 'express';
+import { getPokemonCards, getPokemonCardById, createPokemonCard, updatePokemonCard, deletePokemonCard } from './pc_controller';
  
 export const pc_router = Router();
 
@@ -10,16 +10,10 @@ pc_router.get('/', getPokemonCards);
 pc_router.get('/:pokemonCardId', getPokemonCardById);
   
 // Route pour créer un pokemon
-pc_router.post('/', (_req: Request, res: Response) => {
-    res.status(201).send('Pokemon créé');
-});
+pc_router.post('/', createPokemonCard)
   
 // Route pour mettre à jour un pokemon
-pc_router.patch('/:pokemonCardId', (_req: Request, res: Response) => {
-    res.status(200).send(`Pokemon ${_req.params.pokemonCardId} mis à jour`);
-});
+pc_router.patch('/:pokemonCardId', updatePokemonCard)
   
 // Route pour supprimer un pokemon
-pc_router.delete('/:pokemonCardId', (_req: Request, res: Response) => {
-    res.status(200).send(`Pokemon ${_req.params.pokemonCardId} supprimé`);
-});
+pc_router.delete('/:pokemonCardId', deletePokemonCard)
