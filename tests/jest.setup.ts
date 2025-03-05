@@ -31,6 +31,27 @@ jest.mock('bcrypt', () => ({
   }),
 }));
 
+// Mock des types de Pokémon
+export const mockPokemonTypes = [
+  { id: 1, name: 'Fire' },
+  { id: 2, name: 'Water' },
+  { id: 3, name: 'Grass' },
+  { id: 4, name: 'Electric' },
+  { id: 5, name: 'Ice' },
+  { id: 6, name: 'Fighting' },
+  { id: 7, name: 'Poison' },
+  { id: 8, name: 'Ground' },
+  { id: 9, name: 'Flying' },
+  { id: 10, name: 'Psychic' },
+  { id: 11, name: 'Bug' },
+  { id: 12, name: 'Rock' },
+  { id: 13, name: 'Ghost' },
+  { id: 14, name: 'Dragon' },
+  { id: 15, name: 'Dark' },
+  { id: 16, name: 'Steel' },
+  { id: 17, name: 'Fairy' },
+];
+
 beforeEach(() => {
   mockReset(prismaMock);
   jest.clearAllMocks();
