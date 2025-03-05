@@ -49,7 +49,7 @@ export const getPokemonCardById = async (req: Request, res: Response) => {
         }
     });
     if (!pokemon) {
-        res.status(404).json({ error: `Le pokemon avec l'id ${req.params.pokemonCardId} n'existe pas` });
+        res.status(404).send({ error: `Le pokemon avec l'id ${req.params.pokemonCardId} n'existe pas` });
         return;
     }
     res.status(200).send(pokemon);
@@ -60,31 +60,31 @@ export const createPokemonCard = async (req: Request, res: Response) => {
     const { name, pokedexId, typeId, lifePoints, size, weight, imageUrl } = req.body;
 
     if (!name) {
-        res.status(400).json({ error: `Le champ 'name' est vide` });
+        res.status(400).send({ error: `Le champ 'name' est vide` });
         return;
     }
     if (!pokedexId) {
-        res.status(400).json({ error: `Le champ 'pokedexId' est vide` });
+        res.status(400).send({ error: `Le champ 'pokedexId' est vide` });
         return;
     }
     if (!typeId) {
-        res.status(400).json({ error: `Le champ 'typeId' est vide` });
+        res.status(400).send({ error: `Le champ 'typeId' est vide` });
         return;
     }
     if (!lifePoints) {
-        res.status(400).json({ error: `Le champ 'lifePoints' est vide` });
+        res.status(400).send({ error: `Le champ 'lifePoints' est vide` });
         return;
     }
 
     const double = await verifyNamePokedexId(name, pokedexId);
     if (double) {
-        res.status(400).json({ error: `Le nom ou le pokedexId est déjà utilisé` });
+        res.status(400).send({ error: `Le nom ou le pokedexId est déjà utilisé` });
         return;
     }
 
     const type = await existingType(typeId);
     if (!type) {
-        res.status(400).json({ error: `Le type avec l'id ${typeId} n'existe pas` });
+        res.status(400).send({ error: `Le type avec l'id ${typeId} n'existe pas` });
         return;
     }
 
@@ -99,7 +99,7 @@ export const createPokemonCard = async (req: Request, res: Response) => {
             imageUrl,
         }
     });
-    res.status(201).json(newpokemon);
+    res.status(201).send(newpokemon);
     return;
 }
 
@@ -134,7 +134,7 @@ export const updatePokemonCard = async (req: Request, res: Response) => {
             imageUrl,
         }
     });
-    res.status(200).json(updatedpokemon);
+    res.status(200).send(updatedpokemon);
     return;
 }
 
