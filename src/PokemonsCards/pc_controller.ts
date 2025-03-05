@@ -48,7 +48,7 @@ export const getPokemonCardById = async (req: Request, res: Response) => {
         }
     });
     if (!pokemon) {
-        res.status(404).send(`Le pokemon avec l'id ${req.params.pokemonCardId} n'existe pas`);
+        res.status(404).json({ error: `Le pokemon avec l'id ${req.params.pokemonCardId} n'existe pas` });
         return;
     }
     res.status(200).send(pokemon);
