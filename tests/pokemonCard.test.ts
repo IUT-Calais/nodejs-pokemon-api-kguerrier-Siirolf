@@ -4,6 +4,7 @@ import { prismaMock } from './jest.setup';
 
 describe('PokemonCard API', () => {
 
+  // Test de la route pour obtenir la liste des pokemons
   describe('GET /pokemons-cards', () => {
     it('should fetch all PokemonCards', async () => {
       const mockPokemonCards = [
@@ -48,6 +49,7 @@ describe('PokemonCard API', () => {
     });
   });
 
+  // Test de la route pour obtenir un pokemon en particulier
   describe('GET /pokemons-cards/:pokemonCardId', () => {
     it('should fetch a PokemonCard by ID', async () => {
 
@@ -80,6 +82,7 @@ describe('PokemonCard API', () => {
     });
   });
 
+  // Test de la route pour créer un pokemon
   describe('POST /pokemons-cards', () => {
     it('should create a new PokemonCard', async () => {
       const newPokemonCardInput = {
@@ -96,7 +99,6 @@ describe('PokemonCard API', () => {
         id: 1,
         ...newPokemonCardInput,
       };
-// ----------------- DEMANDER SI CEST OK AVEC LA LIGNE EN DESSOUS --------------------
       prismaMock.type.findUnique.mockResolvedValue({ id: 3, name: 'Grass' });
       prismaMock.pokemonCard.create.mockResolvedValue(newPokemonCardOutput);
 
@@ -178,7 +180,7 @@ describe('PokemonCard API', () => {
     });
   });
 
-
+  // Test de la route pour mettre à jour un pokemon
   describe('PATCH /pokemons-cards/:pokemonCardId', () => {
     it('should update an existing PokemonCard', async () => {
       const updatedPokemonCardInput = {
@@ -208,56 +210,97 @@ describe('PokemonCard API', () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual(updatedPokemonCardOutput);
     });
-    
-    // it('should return 404 if PokemonCard to update is not found', async () => {
-    //   const updatedPokemonCardInput = {
-    //     name: 'Bulbizarre',
-    //     pokedexId: 1,
-    //     typeId: 3,
-    //     lifePoints: 50,
-    //     size: 0.8,
-    //     weight: 7.0,
-    //     imageUrl: 'https://assets.pokemon.com/assets/cms2/img/pokedex/full/001.png',
-    //   };
 
-    //   prismaMock.pokemonCard.findUnique.mockResolvedValue(null);
+    it('should return 404 if PokemonCard to update is not found', async () => {
+      const updatedPokemonCardInput = {
+        name: 'Bulbizarre',
+        pokedexId: 1,
+        typeId: 3,
+        lifePoints: 50,
+        size: 0.8,
+        weight: 7.0,
+        imageUrl: 'https://assets.pokemon.com/assets/cms2/img/pokedex/full/001.png',
+      };
 
-    //   const response = await request(app)
-    //     .patch('/pokemons-cards/999')
-    //     .set('Authorization', `Bearer mockedToken`)
-    //     .send(updatedPokemonCardInput);
+      prismaMock.pokemonCard.findUnique.mockResolvedValue(null);
 
-    //   expect(response.status).toBe(404);
-    //   expect(response.body).toEqual({ error: "Le pokemon avec l'id 999 n'existe pas" });
-    // });
+      const response = await request(app)
+        .patch('/pokemons-cards/999')
+        .set('Authorization', `Bearer mockedToken`)
+        .send(updatedPokemonCardInput);
 
-    // it('should return 400 if type does not exist', async () => {
-    //   const updatedPokemonCardInput = {
-    //     name: 'Bulbizarre',
-    //     pokedexId: 1,
-    //     typeId: 999,
-    //     lifePoints: 50,
-    //     size: 0.8,
-    //     weight: 7.0,
-    //     imageUrl: 'https://assets.pokemon.com/assets/cms2/img/pokedex/full/001.png',
-    //   };
+      expect(response.status).toBe(404);
+      expect(response.text).toBe(`Le pokemon avec l'id 999 n'existe pas`);
+    });
 
-    //   prismaMock.type.findUnique.mockResolvedValue(null);
+    it('should return 400 if type does not exist', async () => {
+      const updatedPokemonCardInput = {
+        name: 'Bulbizarre',
+        pokedexId: 1,
+        typeId: 999,
+        lifePoints: 50,
+        size: 0.8,
+        weight: 7.0,
+        imageUrl: 'https://assets.pokemon.com/assets/cms2/img/pokedex/full/001.png',
+      };
 
-    //   const response = await request(app)
-    //     .patch('/pokemons-cards/1')
-    //     .set('Authorization', `Bearer mockedToken`)
-    //     .send(updatedPokemonCardInput);
+      prismaMock.pokemonCard.findUnique.mockResolvedValue({
+        id: 1,
+        name: 'Bulbizarre',
+        pokedexId: 1,
+        typeId: 3,
+        lifePoints: 45,
+        size: 0.7,
+        weight: 6.9,
+        imageUrl: 'https://assets.pokemon.com/assets/cms2/img/pokedex/full/001.png',
+      });
 
-    //   expect(response.status).toBe(400);
-    //   expect(response.body).toEqual({ error: `Le type avec l'id 999 n'existe pas` });
-    // });
+      prismaMock.type.findUnique.mockResolvedValue(null);
+
+      const response = await request(app)
+        .patch('/pokemons-cards/1')
+        .set('Authorization', `Bearer mockedToken`)
+        .send(updatedPokemonCardInput);
+
+      expect(response.status).toBe(400);
+      expect(response.text).toBe(`Le type avec l'id 999 n'existe pas`);
+    });
   });
 
-  //   describe('DELETE /pokemons-cards/:pokemonCardId', () => {
-  //     it('should delete a PokemonCard', async () => {
-  //       expect(response.status).toBe(204);
-  //     });
-  //   });
-  // });
+  // Test de la route pour supprimer un pokemon
+  describe('DELETE /pokemons-cards/:pokemonCardId', () => {
+    it('should delete an existing PokemonCard', async () => {
+      const mockDeletedPokemon = {
+        id: 1,
+        name: 'Bulbizarre',
+        pokedexId: 1,
+        typeId: 3,
+        lifePoints: 45,
+        size: 0.7,
+        weight: 6.9,
+        imageUrl: 'https://assets.pokemon.com/assets/cms2/img/pokedex/full/001.png',
+      };
+  
+      prismaMock.pokemonCard.findUnique.mockResolvedValue(mockDeletedPokemon);
+      prismaMock.pokemonCard.delete.mockResolvedValue(mockDeletedPokemon);
+  
+      const response = await request(app)
+        .delete('/pokemons-cards/1')
+        .set('Authorization', `Bearer mockedToken`);
+  
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(mockDeletedPokemon);
+    });
+  
+    it('should return 404 if PokemonCard to delete is not found', async () => {
+      prismaMock.pokemonCard.findUnique.mockResolvedValue(null);
+  
+      const response = await request(app)
+        .delete('/pokemons-cards/999')
+        .set('Authorization', `Bearer mockedToken`);
+  
+      expect(response.status).toBe(404);
+      expect(response.text).toBe(`Le pokemon avec l'id 999 n'existe pas`);
+    });
+  });
 });

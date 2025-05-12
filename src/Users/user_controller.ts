@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import prisma from '../client';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { re } from 'mathjs';
 
 // Fonction pour créer un utilisateur
 export const createUser = async (req: Request, res: Response) => {
