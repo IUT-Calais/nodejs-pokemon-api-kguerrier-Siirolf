@@ -3,7 +3,6 @@ import { app } from '../src';
 import { prismaMock } from './jest.setup';
 
 describe('PokemonCard API', () => {
-
   // Test de la route pour obtenir la liste des pokemons
   describe('GET /pokemons-cards', () => {
     it('should fetch all PokemonCards', async () => {
@@ -37,7 +36,7 @@ describe('PokemonCard API', () => {
           size: 1.5,
           weight: 40,
           imageUrl: 'https://assets.pokemon.com/assets/cms2/img/pokedex/full/094.png',
-        }
+        },
       ];
 
       prismaMock.pokemonCard.findMany.mockResolvedValue(mockPokemonCards);
@@ -52,7 +51,6 @@ describe('PokemonCard API', () => {
   // Test de la route pour obtenir un pokemon en particulier
   describe('GET /pokemons-cards/:pokemonCardId', () => {
     it('should fetch a PokemonCard by ID', async () => {
-
       const mockPokemonCard = {
         id: 1,
         name: 'Pikachu',
@@ -111,19 +109,80 @@ describe('PokemonCard API', () => {
       expect(response.body).toEqual(newPokemonCardOutput);
     });
 
-    it('should return 400 if required fields are missing', async () => {
-      const incompletePokemonCard = {
-        name: 'Bulbizarre',
+    it("should return 400 if 'name' is missing", async () => {
+      const newPokemonCardInput = {
         pokedexId: 1,
+        typeId: 3,
+        lifePoints: 45,
+        size: 0.7,
+        weight: 6.9,
+        imageUrl: 'https://assets.pokemon.com/assets/cms2/img/pokedex/full/001.png',
       };
 
       const response = await request(app)
         .post('/pokemons-cards')
         .set('Authorization', `Bearer mockedToken`)
-        .send(incompletePokemonCard);
+        .send(newPokemonCardInput);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({ error: `Le champ 'name' est vide` });
+    });
+
+    it("should return 400 if 'pokedexId' is missing", async () => {
+      const newPokemonCardInput = {
+        name: 'Bulbizarre',
+        typeId: 3,
+        lifePoints: 45,
+        size: 0.7,
+        weight: 6.9,
+        imageUrl: 'https://assets.pokemon.com/assets/cms2/img/pokedex/full/001.png',
+      };
+
+      const response = await request(app)
+        .post('/pokemons-cards')
+        .set('Authorization', `Bearer mockedToken`)
+        .send(newPokemonCardInput);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({ error: `Le champ 'pokedexId' est vide` });
+    });
+
+    it("should return 400 if 'typeId' is missing", async () => {
+      const newPokemonCardInput = {
+        name: 'Bulbizarre',
+        pokedexId: 1,
+        lifePoints: 45,
+        size: 0.7,
+        weight: 6.9,
+        imageUrl: 'https://assets.pokemon.com/assets/cms2/img/pokedex/full/001.png',
+      };
+
+      const response = await request(app)
+        .post('/pokemons-cards')
+        .set('Authorization', `Bearer mockedToken`)
+        .send(newPokemonCardInput);
 
       expect(response.status).toBe(400);
       expect(response.body).toEqual({ error: `Le champ 'typeId' est vide` });
+    });
+
+    it("should return 400 if 'lifePoints' is missing", async () => {
+      const newPokemonCardInput = {
+        name: 'Bulbizarre',
+        pokedexId: 1,
+        typeId: 3,
+        size: 0.7,
+        weight: 6.9,
+        imageUrl: 'https://assets.pokemon.com/assets/cms2/img/pokedex/full/001.png',
+      };
+
+      const response = await request(app)
+        .post('/pokemons-cards')
+        .set('Authorization', `Bearer mockedToken`)
+        .send(newPokemonCardInput);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({ error: `Le champ 'lifePoints' est vide` });
     });
 
     it('should return 400 if name or pokedexId already exists', async () => {
@@ -280,25 +339,25 @@ describe('PokemonCard API', () => {
         weight: 6.9,
         imageUrl: 'https://assets.pokemon.com/assets/cms2/img/pokedex/full/001.png',
       };
-  
+
       prismaMock.pokemonCard.findUnique.mockResolvedValue(mockDeletedPokemon);
       prismaMock.pokemonCard.delete.mockResolvedValue(mockDeletedPokemon);
-  
+
       const response = await request(app)
         .delete('/pokemons-cards/1')
         .set('Authorization', `Bearer mockedToken`);
-  
+
       expect(response.status).toBe(200);
       expect(response.body).toEqual(mockDeletedPokemon);
     });
-  
+
     it('should return 404 if PokemonCard to delete is not found', async () => {
       prismaMock.pokemonCard.findUnique.mockResolvedValue(null);
-  
+
       const response = await request(app)
         .delete('/pokemons-cards/999')
         .set('Authorization', `Bearer mockedToken`);
-  
+
       expect(response.status).toBe(404);
       expect(response.text).toBe(`Le pokemon avec l'id 999 n'existe pas`);
     });
