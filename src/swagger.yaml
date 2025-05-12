@@ -1,0 +1,290 @@
+openapi: 3.0.0
+info:
+  title: Prisma User API
+  version: 1.0.0
+  description: API pour gérer les utilisateurs et leurs authentifications.
+servers:
+  - url: http://localhost:3000
+    description: Serveur local
+
+paths:
+  /users:
+    post:
+      summary: Crée un nouvel utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "example@example.com"
+                password:
+                  type: string
+                  example: "password123"
+      responses:
+        "201":
+          description: Utilisateur créé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Erreur de validation ou email déjà utilisé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Email déjà utilisé"
+
+  /users/login:
+    post:
+      summary: Connecte un utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "example@example.com"
+                password:
+                  type: string
+                  example: "password123"
+      responses:
+        "201":
+          description: Utilisateur connecté avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        "400":
+          description: Erreur d'authentification
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Mot de passe incorrect"
+  /pokemon-cards:
+    get:
+      summary: Récupère la liste de toutes les cartes Pokémon
+      responses:
+        "200":
+          description: Liste des cartes Pokémon
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PokemonCard"
+    post:
+      summary: Crée une nouvelle carte Pokémon
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Pikachu"
+                pokedexId:
+                  type: integer
+                  example: 25
+                typeId:
+                  type: integer
+                  example: 1
+                lifePoints:
+                  type: integer
+                  example: 60
+                size:
+                  type: number
+                  example: 0.4
+                weight:
+                  type: number
+                  example: 6.0
+                imageUrl:
+                  type: string
+                  example: "https://example.com/pikachu.png"
+      responses:
+        "201":
+          description: Carte Pokémon créée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PokemonCard"
+        "400":
+          description: Erreur de validation ou doublon
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Le nom ou le pokedexId est déjà utilisé"
+
+  /pokemon-cards/{pokemonCardId}:
+    get:
+      summary: Récupère une carte Pokémon par son ID
+      parameters:
+        - name: pokemonCardId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID de la carte Pokémon
+      responses:
+        "200":
+          description: Carte Pokémon trouvée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PokemonCard"
+        "404":
+          description: Carte Pokémon non trouvée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Le pokemon avec l'id 1 n'existe pas"
+    put:
+      summary: Met à jour une carte Pokémon par son ID
+      parameters:
+        - name: pokemonCardId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID de la carte Pokémon
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Raichu"
+                pokedexId:
+                  type: integer
+                  example: 26
+                typeId:
+                  type: integer
+                  example: 2
+                lifePoints:
+                  type: integer
+                  example: 80
+                size:
+                  type: number
+                  example: 0.8
+                weight:
+                  type: number
+                  example: 30.0
+                imageUrl:
+                  type: string
+                  example: "https://example.com/raichu.png"
+      responses:
+        "200":
+          description: Carte Pokémon mise à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PokemonCard"
+        "404":
+          description: Carte Pokémon non trouvée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Le pokemon avec l'id 1 n'existe pas"
+    delete:
+      summary: Supprime une carte Pokémon par son ID
+      parameters:
+        - name: pokemonCardId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID de la carte Pokémon
+      responses:
+        "200":
+          description: Carte Pokémon supprimée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PokemonCard"
+        "404":
+          description: Carte Pokémon non trouvée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Le pokemon avec l'id 1 n'existe pas"
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        email:
+          type: string
+          example: "example@example.com"
+        password:
+          type: string
+          example: "hashed_password"
+    PokemonCard:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Pikachu"
+        pokedexId:
+          type: integer
+          example: 25
+        typeId:
+          type: integer
+          example: 1
+        lifePoints:
+          type: integer
+          example: 60
+        size:
+          type: number
+          example: 0.4
+        weight:
+          type: number
+          example: 6.0
+        imageUrl:
+          type: string
+          example: "https://example.com/pikachu.png"
