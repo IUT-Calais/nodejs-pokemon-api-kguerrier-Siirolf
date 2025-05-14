@@ -1,8 +1,11 @@
 import request from 'supertest';
-import { app } from '../src';
+import { app, stopServer } from '../src';
 import { prismaMock } from './jest.setup';
 
-describe('PokemonCard API', () => {
+afterAll(() => {
+  stopServer();
+});
+  
   // Test de la route pour obtenir la liste des pokemons
   describe('GET /pokemons-cards', () => {
     it('should fetch all PokemonCards', async () => {
@@ -362,4 +365,3 @@ describe('PokemonCard API', () => {
       expect(response.text).toBe(`Le pokemon avec l'id 999 n'existe pas`);
     });
   });
-});

@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { app,stopServer } from '../src';
+import { app, stopServer } from '../src';
 import { prismaMock } from './jest.setup';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
@@ -120,5 +120,110 @@ describe('POST /user/login', () => {
 
     expect(response.status).toBe(400);
     expect(response.body).toEqual({ error: 'Mot de passe incorrect' });
+  });
+});
+
+// Test de la route pour récupérer tous les utilisateurs
+describe('GET /user', () => {
+  it('should return all users', async () => {
+    const users = [
+      { id: 1, email: 'user1@gmail.com', password: 'hashedPassword1' },
+      { id: 2, email: 'user2@gmail.com', password: 'hashedPassword2' },
+    ];
+
+    prismaMock.user.findMany.mockResolvedValue(users);
+
+    const response = await request(app).get('/user');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(users);
+  });
+});
+
+// Test de la route pour récupérer un utilisateur par ID
+describe('GET /user/:id', () => {
+  it('should return a user by ID', async () => {
+    const user = { id: 1, email: 'user1@gmail.com', password: 'hashedPassword1' };
+
+    prismaMock.user.findUnique.mockResolvedValue(user);
+
+    const response = await request(app).get('/user/1');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(user);
+  });
+
+  it('should return 404 if user is not found', async () => {
+    prismaMock.user.findUnique.mockResolvedValue(null);
+
+    const response = await request(app).get('/user/999');
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ error: `Utilisateur non trouvé` });
+  });
+});
+
+// Test de la route pour mettre à jour un utilisateur
+describe('PUT /user/:id', () => {
+  it('should update a user', async () => {
+    const updatedUser = { id: 1, email: 'updated@gmail.com', password: 'hashedUpdatedPassword' };
+
+    prismaMock.user.findUnique.mockResolvedValue(updatedUser);
+    prismaMock.user.update.mockResolvedValue(updatedUser);
+
+    const response = await request(app).put('/user/1').send({
+      email: 'updated@gmail.com',
+      password: 'newpassword',
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(updatedUser);
+  });
+
+  it('should return 404 if user is not found', async () => {
+    prismaMock.user.findUnique.mockResolvedValue(null);
+
+    const response = await request(app).put('/user/999').send({
+      email: 'updated@gmail.com',
+      password: 'newpassword',
+    });
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ error: `Utilisateur non trouvé` });
+  });
+
+  it('should update a user with no new data (keep old values)', async () => {
+  const existingUser = { id: 1, email: 'old@gmail.com', password: 'hashedOldPassword' };
+
+  prismaMock.user.findUnique.mockResolvedValue(existingUser);
+  prismaMock.user.update.mockResolvedValue(existingUser);
+
+  const response = await request(app).put('/user/1').send({});
+
+  expect(response.status).toBe(200);
+  expect(response.body).toEqual(existingUser);
+});
+});
+
+// Test de la route pour supprimer un utilisateur
+describe('DELETE /user/:id', () => {
+  it('should delete a user', async () => {
+    const user = { id: 1, email: 'user1@gmail.com', password: 'hashedPassword1' };
+
+    prismaMock.user.findUnique.mockResolvedValue(user);
+    prismaMock.user.delete.mockResolvedValue(user);
+
+    const response = await request(app).delete('/user/1');
+
+    expect(response.status).toBe(204);
+  });
+
+  it('should return 404 if user is not found', async () => {
+    prismaMock.user.findUnique.mockResolvedValue(null);
+
+    const response = await request(app).delete('/user/999');
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ error: `Utilisateur non trouvé` });
   });
 });
